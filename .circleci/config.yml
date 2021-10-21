@@ -44,6 +44,25 @@ jobs:
       - run:
           name: Display hash
           command: echo "last hash is $CIRCLE_SHA1"
+  
+  build-and-push-docker-image:
+    docker:
+      - image: cimg/python:3.8
+        auth:
+          username: yannissaliniere
+          password: $DOCKERHUB_PASSWORD  
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.9
+          docker_layer_caching: true
+
+      # build and push Docker image
+      - run: |
+          TAG=CIRCLE_SHA1
+          docker build -t yannis971/test_docker:$TAG .
+          echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+          docker push yannis971/test_docker:$TAG
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -52,3 +71,6 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build-lint-test
+      - build-and-push-docker-image:
+         requires:
+           - build-lint-test
