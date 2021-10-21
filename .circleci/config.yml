@@ -54,7 +54,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.9
+          version: 20.10.6
           docker_layer_caching: false
 
       # build and push Docker image
