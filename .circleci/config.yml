@@ -49,8 +49,8 @@ jobs:
     docker:
       - image: cimg/python:3.8
         auth:
-          username: yannissaliniere
-          password: $DOCKERHUB_PASSWORD  
+          username: $DOCKER_USER
+          password: $DOCKER_PASS 
     steps:
       - checkout
       - setup_remote_docker:
