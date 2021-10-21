@@ -59,10 +59,10 @@ jobs:
 
       # build and push Docker image
       - run: |
-          TAG=CIRCLE_SHA1
+          TAG=$CIRCLE_SHA1
           docker build -t yannis971/test_docker:$TAG .
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-          docker push yannis971/test_docker:$TAG
+          docker push $DOCKER_USER/test_docker:$TAG
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
