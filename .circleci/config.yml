@@ -73,5 +73,8 @@ workflows:
     jobs:
       - build-lint-test
       - build-and-push-docker-image:
+         filters: 
+           branches:
+             only: main
          requires:
            - build-lint-test
