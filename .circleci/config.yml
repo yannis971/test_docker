@@ -14,7 +14,7 @@ orbs:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  build-and-test: # This is the name of the job, feel free to change it to better match what you're trying to do!
+  build-lint-test: # This is the name of the job, feel free to change it to better match what you're trying to do!
     # These next lines defines a Docker executors: https://circleci.com/docs/2.0/executor-types/
     # You can specify an image from Dockerhub or use one of the convenience images from CircleCI's Developer Hub
     # A list of available CircleCI Docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
@@ -34,9 +34,36 @@ jobs:
           # app-dir: ~/project/package-directory/  # If you're requirements.txt isn't in the root directory.
           # pip-dependency-file: test-requirements.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
       - run:
+          name: Lint
+          # This assumes flake8 is installed via the install-package step above
+          command: flake8
+      - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
           command: pytest
+      - run:
+          name: Display hash
+          command: echo "last hash is $CIRCLE_SHA1"
+  
+  build-and-push-docker-image:
+    docker:
+      - image: cimg/python:3.8
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS 
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.6
+          docker_layer_caching: false
+
+      # build and push Docker image
+      - run: |
+          TAG=$CIRCLE_SHA1
+          docker build -t yannis971/test_docker:$TAG .
+          echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+          docker tag yannis971/test_docker:$TAG yannissaliniere/test_docker:$TAG
+          docker push yannissaliniere/test_docker:$TAG
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -44,4 +71,7 @@ workflows:
   sample: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
-      - build-and-test
+      - build-lint-test
+      - build-and-push-docker-image:
+         requires:
+           - build-lint-test
