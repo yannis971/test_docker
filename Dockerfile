@@ -10,8 +10,8 @@ WORKDIR /app
 
 ADD . .
 
-EXPOSE 8000
+# EXPOSE 8000
 
-CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "test_docker.wsgi:application"]
+# CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "test_docker.wsgi:application"]
 
-#CMD gunicorn test_docker.wsgi:application --bind 0.0.0.0:$PORT
+CMD gunicorn test_docker.wsgi:application --bind 0.0.0.0:$PORT
