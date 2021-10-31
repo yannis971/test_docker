@@ -66,8 +66,17 @@ jobs:
   heroku-deploy:
     docker:
       - image: cimg/python:3.8
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS 
     steps:
-      - heroku/deploy-via-git
+      - run: |
+          echo $HEROKU_API_KEY | docker login --username=_ --password-stdin
+          heroku maintenance:on --app=$HEROKU_APP
+          docker tag yannis971/test_docker:$TAG registry.heroku.com/$HEROKU_APP/web
+          docker push registry.heroku.com/$HEROKU_APP/web
+          heroku container:release web 
+          heroku maintenance:off --app=$HEROKU_APP
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
