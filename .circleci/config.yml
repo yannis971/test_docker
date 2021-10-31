@@ -57,11 +57,10 @@ jobs:
 
       # build and push Docker image
       - run: |
-          TAG=$CIRCLE_SHA1
-          docker build -t yannis971/test_docker:$TAG .
+          docker build -t yannis971/test_docker:$CIRCLE_SHA1 .
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-          docker tag yannis971/test_docker:$TAG yannissaliniere/test_docker:$TAG
-          docker push yannissaliniere/test_docker:$TAG
+          docker tag yannis971/test_docker:$CIRCLE_SHA1 yannissaliniere/test_docker:$CIRCLE_SHA1
+          docker push yannissaliniere/test_docker:$CIRCLE_SHA1
 
   heroku-deploy:
     docker:
@@ -79,7 +78,7 @@ jobs:
           sudo curl https://cli-assets.heroku.com/install.sh | sh
           echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
           heroku maintenance:on --app=$HEROKU_APP_NAME
-          docker tag yannis971/test_docker:$TAG registry.heroku.com/$HEROKU_APP_NAME/web
+          docker tag yannis971/test_docker:$CIRCLE_SHA1 registry.heroku.com/$HEROKU_APP_NAME/web
           docker push registry.heroku.com/$HEROKU_APP_NAME/web
           heroku container:release web 
           heroku maintenance:off --app=$HEROKU_APP_NAME
