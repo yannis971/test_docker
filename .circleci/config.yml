@@ -78,6 +78,7 @@ jobs:
           sudo curl https://cli-assets.heroku.com/install.sh | sh
           echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
           heroku maintenance:on --app=$HEROKU_APP_NAME
+          docker pull yannissaliniere/test_docker:$CIRCLE_SHA1
           docker tag yannissaliniere/test_docker:$CIRCLE_SHA1 registry.heroku.com/$HEROKU_APP_NAME/web
           docker push registry.heroku.com/$HEROKU_APP_NAME/web
           heroku container:release web 
