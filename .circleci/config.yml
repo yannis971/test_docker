@@ -79,7 +79,7 @@ jobs:
           echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
           heroku apps:destroy --app=$HEROKU_APP_NAME --confirm=$HEROKU_APP_NAME
           heroku apps:create $HEROKU_APP_NAME
-          heroku config:set ALLOWED_HOSTS=* DEBUG=False SECRET_KEY=$SECRET_KEY --app=HEROKU_APP_NAME
+          heroku config:set ALLOWED_HOSTS=* DEBUG=False SECRET_KEY=$SECRET_KEY --app=$HEROKU_APP_NAME
           heroku maintenance:on --app=$HEROKU_APP_NAME
           docker pull yannissaliniere/test_docker:$CIRCLE_SHA1
           docker tag yannissaliniere/test_docker:$CIRCLE_SHA1 registry.heroku.com/$HEROKU_APP_NAME/web
